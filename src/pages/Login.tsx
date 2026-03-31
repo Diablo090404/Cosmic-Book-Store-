@@ -12,7 +12,15 @@ const StarField = () => {
     y: Math.random() * 100,
     duration: Math.random() * 4 + 2,
     delay: Math.random() * 5,
-    color: ['#fff', '#e0f2fe', '#fef3c7'][Math.floor(Math.random() * 3)],
+    color: ['#fff', '#e0f2fe', '#fef3c7', '#c084fc'][Math.floor(Math.random() * 4)],
+  }));
+
+  const shootingStars = Array.from({ length: 4 }).map((_, i) => ({
+    id: i,
+    x: Math.random() * 100,
+    y: Math.random() * 50,
+    duration: Math.random() * 2 + 3,
+    delay: Math.random() * 10,
   }));
 
   return (
@@ -27,11 +35,12 @@ const StarField = () => {
             left: `${star.x}%`,
             top: `${star.y}%`,
             backgroundColor: star.color,
-            boxShadow: `0 0 ${star.size * 2}px ${star.color}`,
+            boxShadow: `0 0 ${star.size * 3}px ${star.color}`,
           }}
           animate={{
             opacity: [0.1, 0.8, 0.1],
-            scale: [1, 1.2, 1],
+            scale: [1, 1.5, 1],
+            y: [0, -20, 0],
           }}
           transition={{
             duration: star.duration,
@@ -41,24 +50,48 @@ const StarField = () => {
           }}
         />
       ))}
+      {shootingStars.map((star) => (
+        <motion.div
+          key={`shooting-${star.id}`}
+          className="absolute h-px bg-gradient-to-r from-transparent via-white to-transparent"
+          style={{
+            width: '150px',
+            left: `${star.x}%`,
+            top: `${star.y}%`,
+            rotate: '-45deg',
+            opacity: 0,
+          }}
+          animate={{
+            x: [0, -500],
+            y: [0, 500],
+            opacity: [0, 1, 0],
+            scaleX: [0, 1, 0],
+          }}
+          transition={{
+            duration: star.duration,
+            repeat: Infinity,
+            delay: star.delay,
+            ease: "easeIn",
+          }}
+        />
+      ))}
     </div>
   );
 };
 
 export default function Login() {
   const [isFlipped, setIsFlipped] = useState(false);
-  const [flyingBooks, setFlyingBooks] = useState<any[]>([]);
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Parallax effect for the background
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
-  const springX = useSpring(mouseX, { stiffness: 50, damping: 20 });
-  const springY = useSpring(mouseY, { stiffness: 50, damping: 20 });
+  const springX = useSpring(mouseX, { stiffness: 40, damping: 25 });
+  const springY = useSpring(mouseY, { stiffness: 40, damping: 25 });
 
-  const bgX = useTransform(springX, [-500, 500], [-20, 20]);
-  const bgY = useTransform(springY, [-500, 500], [-20, 20]);
+  const bgX = useTransform(springX, [-500, 500], [-30, 30]);
+  const bgY = useTransform(springY, [-500, 500], [-30, 30]);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -72,21 +105,6 @@ export default function Login() {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [mouseX, mouseY]);
 
-  useEffect(() => {
-    // Generate random flying books with realistic properties
-    const books = Array.from({ length: 15 }).map((_, i) => ({
-      id: i,
-      x: Math.random() * 100,
-      y: Math.random() * 100,
-      size: Math.random() * 70 + 50,
-      duration: Math.random() * 20 + 20,
-      delay: Math.random() * 15,
-      rotation: Math.random() * 360,
-      image: `https://images.unsplash.com/photo-1544947950-fa07a98d237f?q=80&w=200&auto=format&fit=crop&seed=${i}`,
-    }));
-    setFlyingBooks(books);
-  }, []);
-
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     navigate('/');
@@ -96,79 +114,48 @@ export default function Login() {
     <div 
       ref={containerRef}
       className="min-h-screen bg-[#020617] flex items-center justify-center p-4 overflow-hidden relative"
+      style={{ perspective: '1500px' }}
     >
       {/* Deep Space Background with Parallax Nebulae */}
       <motion.div 
-        className="absolute inset-[-10%] pointer-events-none"
+        className="absolute inset-[-20%] pointer-events-none"
         style={{ x: bgX, y: bgY }}
       >
         <div 
-          className="absolute inset-0 opacity-50 bg-cover bg-center mix-blend-screen"
+          className="absolute inset-0 opacity-70 bg-cover bg-center mix-blend-screen"
           style={{ 
             backgroundImage: 'url("https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=2048&auto=format&fit=crop")',
-            filter: 'hue-rotate(10deg) saturate(1.2) blur(2px)'
+            filter: 'hue-rotate(10deg) saturate(1.5) blur(4px)'
           }}
         />
         <div 
-          className="absolute inset-0 opacity-30 bg-cover bg-center mix-blend-overlay animate-pulse"
+          className="absolute inset-0 opacity-40 bg-cover bg-center mix-blend-overlay animate-pulse"
           style={{ 
             backgroundImage: 'url("https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?q=80&w=2048&auto=format&fit=crop")',
-            animationDuration: '15s'
+            animationDuration: '25s'
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#020617]/40 to-[#020617]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#020617]/70 to-[#020617]" />
       </motion.div>
 
       <StarField />
-
-      {/* Realistic Flying Books with Glow Trails */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {flyingBooks.map((book) => (
-          <motion.div
-            key={book.id}
-            initial={{ 
-              x: `${book.x}vw`, 
-              y: '120vh', 
-              rotate: book.rotation,
-              opacity: 0,
-              scale: 0.4
-            }}
-            animate={{ 
-              y: '-20vh',
-              rotate: book.rotation + 1080,
-              opacity: [0, 0.7, 0.7, 0],
-              scale: [0.4, 1, 1, 0.4]
-            }}
-            transition={{ 
-              duration: book.duration, 
-              repeat: Infinity, 
-              delay: book.delay,
-              ease: "linear"
-            }}
-            className="absolute"
-          >
-            <div className="relative group">
-              {/* Glow Trail Effect */}
-              <div className="absolute -inset-4 bg-cosmic-purple/20 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
-              <img 
-                src={book.image} 
-                alt="Flying Book" 
-                className="rounded-sm shadow-[0_0_40px_rgba(0,0,0,0.8)] border border-white/10"
-                style={{ width: book.size, height: book.size * 1.4, objectFit: 'cover' }}
-                referrerPolicy="no-referrer"
-              />
-              <div className="absolute inset-0 bg-gradient-to-tr from-black/50 to-transparent rounded-sm" />
-            </div>
-          </motion.div>
-        ))}
-      </div>
 
       {/* Main Login Book */}
       <div className="relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 100, rotateX: 20 }}
-          animate={{ opacity: 1, y: 0, rotateX: 0 }}
-          transition={{ duration: 1.2, ease: "easeOut" }}
+          animate={{ 
+            opacity: 1, 
+            y: [0, -15, 0],
+            rotateX: [0, 2, 0],
+            rotateY: [0, -2, 0]
+          }}
+          transition={{ 
+            opacity: { duration: 1.2, ease: "easeOut" },
+            y: { duration: 6, repeat: Infinity, ease: "easeInOut" },
+            rotateX: { duration: 8, repeat: Infinity, ease: "easeInOut" },
+            rotateY: { duration: 10, repeat: Infinity, ease: "easeInOut" }
+          }}
           className="book-container"
         >
           <div className={`book ${isFlipped ? 'flipped' : ''}`}>

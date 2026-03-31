@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 
 interface BookCardProps {
   book: Book;
+  key?: string | number;
 }
 
 export default function BookCard({ book }: BookCardProps) {
