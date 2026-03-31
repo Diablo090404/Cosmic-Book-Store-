@@ -20,25 +20,29 @@
               #020617;
 }
 
+.bg-gold-gradient {
+  background: linear-gradient(to bottom, #d4af37, #f97316, #d4af37);
+}
+
 .glass-card {
   @apply bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl;
 }
 
 /* 3D Book Flip Styles */
 .book-container {
-  perspective: 1000px;
+  perspective: 2000px;
 }
 
 .book {
-  width: 300px;
-  height: 450px;
+  width: 380px;
+  height: 540px;
   position: relative;
   transform-style: preserve-3d;
-  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .book.flipped {
-  transform: rotateY(-180deg);
+  transform: rotateY(-180deg) rotateX(5deg);
 }
 
 .book-front, .book-back {
@@ -48,19 +52,28 @@
   backface-visibility: hidden;
   border-radius: 4px 12px 12px 4px;
   overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.book-front {
+  z-index: 2;
+  transform-origin: left;
 }
 
 .book-back {
   transform: rotateY(180deg);
-  background: #1e293b;
+  background: #f8fafc;
+  z-index: 1;
 }
 
 .book-spine {
   position: absolute;
-  width: 40px;
+  width: 50px;
   height: 100%;
-  background: #4c1d95;
-  transform: rotateY(-90deg) translateX(-20px);
+  background: #1e1b4b;
+  transform: rotateY(-90deg) translateX(-25px);
   transform-origin: left;
   left: 0;
+  z-index: 3;
+  box-shadow: inset -10px 0 20px rgba(0,0,0,0.5);
 }
